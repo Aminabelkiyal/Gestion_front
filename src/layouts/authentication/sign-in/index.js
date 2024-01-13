@@ -20,14 +20,7 @@ import { Link } from "react-router-dom";
 
 // @mui material components
 import Card from "@mui/material/Card";
-import Switch from "@mui/material/Switch";
 import Grid from "@mui/material/Grid";
-import MuiLink from "@mui/material/Link";
-
-// @mui icons
-import FacebookIcon from "@mui/icons-material/Facebook";
-import GitHubIcon from "@mui/icons-material/GitHub";
-import GoogleIcon from "@mui/icons-material/Google";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -40,11 +33,50 @@ import BasicLayout from "layouts/authentication/components/BasicLayout";
 
 // Images
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
+import React from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 function Basic() {
-  const [rememberMe, setRememberMe] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
 
-  const handleSetRememberMe = () => setRememberMe(!rememberMe);
+  const onChangeUsername = (e) => {
+    const username = e.target.value;
+    setUsername(username);
+  };
+
+  const onChangePassword = (e) => {
+    const password = e.target.value;
+    setPassword(password);
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post("http://localhost:8080/gestion_events/auth/signin", {
+        username,
+        password,
+      });
+      const user = response.data;
+      console.log(user.id);
+      const token = response.data.token;
+      Cookies.set("event", token, { path: "/api", expires: 1 });
+      localStorage.setItem("user", JSON.stringify(response.data));
+
+      navigate("/dashboard");
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        setErrorMessage("Nom d'utilisateur ou mot de passe incorrect.");
+      } else {
+        setErrorMessage("Erreur de connexion. Vérifiez vos informations d'identification.");
+      }
+      console.error(error);
+    }
+  };
 
   return (
     <BasicLayout image={bgImage}>
@@ -61,54 +93,60 @@ function Basic() {
           textAlign="center"
         >
           <MDTypography variant="h4" fontWeight="medium" color="white" mt={1}>
-            Sign in
+            Se connecter
           </MDTypography>
-          <Grid container spacing={3} justifyContent="center" sx={{ mt: 1, mb: 2 }}>
-            <Grid item xs={2}>
-              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
-                <FacebookIcon color="inherit" />
-              </MDTypography>
-            </Grid>
-            <Grid item xs={2}>
-              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
-                <GitHubIcon color="inherit" />
-              </MDTypography>
-            </Grid>
-            <Grid item xs={2}>
-              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
-                <GoogleIcon color="inherit" />
-              </MDTypography>
-            </Grid>
-          </Grid>
         </MDBox>
         <MDBox pt={4} pb={3} px={3}>
-          <MDBox component="form" role="form">
+          <MDBox component="form" role="form" onSubmit={handleLogin}>
             <MDBox mb={2}>
-              <MDInput type="email" label="Email" fullWidth />
+              <MDInput
+                margin="normal"
+                required
+                fullWidth
+                id="username"
+                label="Nom d'utilisateur"
+                name="username"
+                value={username}
+                autoFocus
+                onChange={onChangeUsername}
+              />
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="password" label="Password" fullWidth />
+              <MDInput
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Mot de passe"
+                type="password"
+                id="password"
+                value={password}
+                onChange={onChangePassword}
+              />
             </MDBox>
-            <MDBox display="flex" alignItems="center" ml={-1}>
-              <Switch checked={rememberMe} onChange={handleSetRememberMe} />
-              <MDTypography
-                variant="button"
-                fontWeight="regular"
-                color="text"
-                onClick={handleSetRememberMe}
-                sx={{ cursor: "pointer", userSelect: "none", ml: -1 }}
-              >
-                &nbsp;&nbsp;Remember me
-              </MDTypography>
-            </MDBox>
+
             <MDBox mt={4} mb={1}>
-              <MDButton variant="gradient" color="info" fullWidth>
-                sign in
+              <MDButton
+                variant="gradient"
+                color="info"
+                type="submit"
+                fullWidth
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Se connecter
               </MDButton>
             </MDBox>
+
+            {errorMessage && (
+              <div className="form-group" style={{ margin: "5px" }}>
+                <div className="alert alert-danger" role="alert" style={{ color: "red" }}>
+                  {errorMessage}
+                </div>
+              </div>
+            )}
             <MDBox mt={3} mb={1} textAlign="center">
               <MDTypography variant="button" color="text">
-                Don&apos;t have an account?{" "}
+                {"Vous n'avez pas de compte ? "}
                 <MDTypography
                   component={Link}
                   to="/authentication/sign-up"
@@ -117,7 +155,7 @@ function Basic() {
                   fontWeight="medium"
                   textGradient
                 >
-                  Sign up
+                  Inscrivez-vous
                 </MDTypography>
               </MDTypography>
             </MDBox>
