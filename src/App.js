@@ -1,18 +1,3 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 import { useState, useEffect, useMemo } from "react";
 
 // react-router components
@@ -52,6 +37,8 @@ import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "co
 // Images
 import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
+import Basic from "layouts/authentication/sign-in";
+import Cover from "layouts/authentication/sign-up";
 
 export default function App() {
   const [controller, dispatch] = useMaterialUIController();
@@ -146,6 +133,8 @@ export default function App() {
     </MDBox>
   );
 
+  const isAuthenticated = localStorage.getItem("user");
+
   return direction === "rtl" ? (
     <CacheProvider value={rtlCache}>
       <ThemeProvider theme={darkMode ? themeDarkRTL : themeRTL}>
@@ -165,14 +154,24 @@ export default function App() {
         )}
         {layout === "vr" && <Configurator />}
         <Routes>
+          <Route path="/authentication/sign-in" element={<Basic />} />
+          <Route path="/authentication/sign-up" element={<Cover />} />
           {getRoutes(routes)}
-          <Route path="*" element={<Navigate to="/dashboard" />} />
+          {isAuthenticated ? (
+            <>
+              {getRoutes(routes)}
+              <Route path="*" element={<Navigate to="/dashboard" />} />
+            </>
+          ) : (
+            <Route path="*" element={<Navigate to="/authentication/sign-in" />} />
+          )}
         </Routes>
       </ThemeProvider>
     </CacheProvider>
   ) : (
     <ThemeProvider theme={darkMode ? themeDark : theme}>
       <CssBaseline />
+
       {layout === "dashboard" && (
         <>
           <Sidenav
@@ -189,8 +188,17 @@ export default function App() {
       )}
       {layout === "vr" && <Configurator />}
       <Routes>
+        <Route path="/authentication/sign-in" element={<Basic />} />
+        <Route path="/authentication/sign-up" element={<Cover />} />
         {getRoutes(routes)}
-        <Route path="*" element={<Navigate to="/dashboard" />} />
+        {isAuthenticated ? (
+          <>
+            {getRoutes(routes)}
+            <Route path="*" element={<Navigate to="/dashboard" />} />
+          </>
+        ) : (
+          <Route path="*" element={<Navigate to="/authentication/sign-in" />} />
+        )}
       </Routes>
     </ThemeProvider>
   );

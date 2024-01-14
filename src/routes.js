@@ -1,12 +1,14 @@
 // Material Dashboard 2 React layouts
 import Dashboard from "layouts/dashboard";
-import Tables from "layouts/tables";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
+import Demandes from "layouts/demandes";
+import Demandes_Attente from "layouts/demande_attente";
+import Utilisateurs from "layouts/Utilisateurs";
 
 const routes = [
   {
@@ -23,23 +25,23 @@ const routes = [
     key: "utilisateurs",
     icon: <Icon fontSize="small">persons</Icon>,
     route: "/utilisateurs",
-    component: <Tables />,
+    component: <Utilisateurs />,
   },
   {
     type: "collapse",
     name: "Demande en attente",
-    key: "billing",
+    key: "Demande en attente",
     icon: <HourglassEmptyIcon fontSize="small" />,
-    route: "/billing",
-    component: <Tables />,
+    route: "/attente",
+    component: <Demandes_Attente />,
   },
   {
     type: "collapse",
     name: "Historique de demandes",
     key: "notifications",
     icon: <Icon fontSize="small">history</Icon>,
-    route: "/notifications",
-    component: <Tables />,
+    route: "/demandes",
+    component: <Demandes />,
   },
   {
     type: "collapse",

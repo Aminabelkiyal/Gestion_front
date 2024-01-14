@@ -9,20 +9,62 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
-import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 
-// Data
-import reportsBarChartData from "layouts/dashboard/data/reportsBarChartData";
-import reportsLineChartData from "layouts/dashboard/data/reportsLineChartData";
-
-// Dashboard components
-import Projects from "layouts/dashboard/components/Projects";
-import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
+import React, { useState, useEffect } from "react";
 
 function Dashboard() {
-  const { sales, tasks } = reportsLineChartData;
+  const [statsData, setStatsData] = useState({
+    totalRequests: 0,
+    pendingRequests: 0,
+    acceptedRequests: 0,
+    rejectedRequests: 0,
+  });
 
+  const [monthlyChartData, setMonthlyChartData] = useState({
+    labels: [],
+    datasets: { label: "Demandes", data: [] },
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/gestion_events/demande/getAll");
+        const data = await response.json();
+
+        const monthlyTotals = {};
+        const allMonths = Array.from({ length: 12 }, (_, i) => i);
+        allMonths.forEach((month) => {
+          const monthLabel = new Date(`${month + 1}-01-2000`).toLocaleString("en-US", {
+            month: "short",
+          });
+          monthlyTotals[monthLabel] = data.filter(
+            (demande) => new Date(demande.dateDebut).getMonth() === month
+          ).length;
+        });
+
+        setMonthlyChartData({
+          labels: Object.keys(monthlyTotals),
+          datasets: { label: "Total demandes", data: Object.values(monthlyTotals) },
+        });
+        // Filtrer les demandes en fonction de leur état
+        const pendingRequests = data.filter((demande) => demande.etat === "pending").length;
+        const acceptedRequests = data.filter((demande) => demande.etat === "Acceptée").length;
+        const rejectedRequests = data.filter((demande) => demande.etat === "Rejetée").length;
+
+        setStatsData({
+          totalRequests: data.length,
+          pendingRequests,
+          acceptedRequests,
+          rejectedRequests,
+        });
+      } catch (error) {
+        console.error("Erreur lors de la récupération des données :", error);
+      }
+    };
+
+    fetchData();
+  }, []);
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -32,13 +74,12 @@ function Dashboard() {
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="dark"
-                icon="weekend"
-                title="Bookings"
-                count={281}
+                icon="assessment"
+                title="Total des demandes"
+                count={statsData.totalRequests}
                 percentage={{
                   color: "success",
-                  amount: "+55%",
-                  label: "than lask week",
+                  label: "Mis à jour maintenant",
                 }}
               />
             </MDBox>
@@ -46,13 +87,12 @@ function Dashboard() {
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
-                icon="leaderboard"
-                title="Today's Users"
-                count="2,300"
+                icon="hourglass_empty"
+                title="Demande en attente"
+                count={statsData.pendingRequests}
                 percentage={{
                   color: "success",
-                  amount: "+3%",
-                  label: "than last month",
+                  label: "Mis à jour maintenant",
                 }}
               />
             </MDBox>
@@ -61,13 +101,12 @@ function Dashboard() {
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="success"
-                icon="store"
-                title="Revenue"
-                count="34k"
+                icon="check"
+                title="Demande acceptée"
+                count={statsData.acceptedRequests}
                 percentage={{
                   color: "success",
-                  amount: "+1%",
-                  label: "than yesterday",
+                  label: "Mis à jour maintenant",
                 }}
               />
             </MDBox>
@@ -76,54 +115,27 @@ function Dashboard() {
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="primary"
-                icon="person_add"
-                title="Followers"
-                count="+91"
+                icon="clear"
+                title="Demande rejetée"
+                count={statsData.rejectedRequests}
                 percentage={{
                   color: "success",
-                  amount: "",
-                  label: "Just updated",
+                  label: "Mis à jour maintenant",
                 }}
               />
             </MDBox>
           </Grid>
         </Grid>
-        <MDBox mt={4.5}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6} lg={4}>
-              <MDBox mb={3}>
+        <MDBox mt={12}>
+          <Grid container>
+            <Grid item xs={8}>
+              <MDBox mb={8}>
                 <ReportsBarChart
                   color="info"
-                  title="website views"
-                  description="Last Campaign Performance"
-                  date="campaign sent 2 days ago"
-                  chart={reportsBarChartData}
-                />
-              </MDBox>
-            </Grid>
-            <Grid item xs={12} md={6} lg={4}>
-              <MDBox mb={3}>
-                <ReportsLineChart
-                  color="success"
-                  title="daily sales"
-                  description={
-                    <>
-                      (<strong>+15%</strong>) increase in today sales.
-                    </>
-                  }
-                  date="updated 4 min ago"
-                  chart={sales}
-                />
-              </MDBox>
-            </Grid>
-            <Grid item xs={12} md={6} lg={4}>
-              <MDBox mb={3}>
-                <ReportsLineChart
-                  color="dark"
-                  title="completed tasks"
-                  description="Last Campaign Performance"
-                  date="just updated"
-                  chart={tasks}
+                  title="Statistiques des demandes par mois"
+                  description="Statistiques mensuelles du nombre de demandes"
+                  date="Mise à jour récente"
+                  chart={monthlyChartData}
                 />
               </MDBox>
             </Grid>

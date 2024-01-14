@@ -21,11 +21,11 @@ import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
-import UpdateUserModal from "./updateUser";
 import AddUserModal from "./addUser";
 import MDButton from "components/MDButton";
+import UpdateUserModal from "./updateUser";
 
-function Tables() {
+function Utilisateurs() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -194,4 +194,4 @@ function Tables() {
   );
 }
 
-export default Tables;
+export default Utilisateurs;
