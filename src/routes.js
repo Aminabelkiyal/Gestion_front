@@ -6,9 +6,12 @@ import SignUp from "layouts/authentication/sign-up";
 // @mui icons
 import Icon from "@mui/material/Icon";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
-import Demandes from "layouts/demandes";
-import Demandes_Attente from "layouts/demande_attente";
 import Utilisateurs from "layouts/Utilisateurs";
+import Produits from "layouts/Produits";
+import Clients from "layouts/Clients";
+import Magasins from "layouts/Magasins";
+import Promotions from "layouts/Promotions";
+import Coupons from "layouts/Coupons";
 
 const routes = [
   {
@@ -29,19 +32,43 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Demande en attente",
-    key: "Demande en attente",
-    icon: <HourglassEmptyIcon fontSize="small" />,
-    route: "/attente",
-    component: <Demandes_Attente />,
+    name: "Clients",
+    key: "clients",
+    icon: <Icon fontSize="small">persons</Icon>,
+    route: "/clients",
+    component: <Clients />,
   },
   {
     type: "collapse",
-    name: "Historique de demandes",
-    key: "notifications",
-    icon: <Icon fontSize="small">history</Icon>,
-    route: "/demandes",
-    component: <Demandes />,
+    name: "Magasins",
+    key: "magasins",
+    icon: <Icon fontSize="small">stores</Icon>,
+    route: "/magasins",
+    component: <Magasins />,
+  },
+  {
+    type: "collapse",
+    name: "Produits",
+    key: "produits",
+    icon: <Icon fontSize="small">category</Icon>,
+    route: "/produits",
+    component: <Produits />,
+  },
+  {
+    type: "collapse",
+    name: "Promotions",
+    key: "promotions",
+    icon: <Icon fontSize="small">local_offer</Icon>,
+    route: "/promotions",
+    component: <Promotions />,
+  },
+  {
+    type: "collapse",
+    name: "Coupons",
+    key: "coupons",
+    icon: <Icon fontSize="small">confirmation_number</Icon>,
+    route: "/coupons",
+    component: <Coupons />,
   },
   {
     type: "collapse",

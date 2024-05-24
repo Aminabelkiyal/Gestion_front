@@ -29,7 +29,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/gestion_events/demande/getAll");
+        const response = await fetch("http://localhost:8080/admin/clients");
         const data = await response.json();
 
         const monthlyTotals = {};
@@ -45,7 +45,10 @@ function Dashboard() {
 
         setMonthlyChartData({
           labels: Object.keys(monthlyTotals),
-          datasets: { label: "Total demandes", data: Object.values(monthlyTotals) },
+          datasets: {
+            label: "Total clients",
+            data: Object.values(monthlyTotals),
+          },
         });
         // Filtrer les demandes en fonction de leur état
         const pendingRequests = data.filter((demande) => demande.etat === "pending").length;
@@ -75,7 +78,7 @@ function Dashboard() {
               <ComplexStatisticsCard
                 color="dark"
                 icon="assessment"
-                title="Total des demandes"
+                title="Total des clients"
                 count={statsData.totalRequests}
                 percentage={{
                   color: "success",
@@ -87,8 +90,8 @@ function Dashboard() {
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
-                icon="hourglass_empty"
-                title="Demande en attente"
+                icon="assessment"
+                title="Total des magasins"
                 count={statsData.pendingRequests}
                 percentage={{
                   color: "success",
@@ -101,8 +104,8 @@ function Dashboard() {
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="success"
-                icon="check"
-                title="Demande acceptée"
+                icon="assessment"
+                title="Total des produits"
                 count={statsData.acceptedRequests}
                 percentage={{
                   color: "success",
@@ -115,8 +118,8 @@ function Dashboard() {
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="primary"
-                icon="clear"
-                title="Demande rejetée"
+                icon="assessment"
+                title="Total des promotions"
                 count={statsData.rejectedRequests}
                 percentage={{
                   color: "success",
@@ -132,8 +135,8 @@ function Dashboard() {
               <MDBox mb={8}>
                 <ReportsBarChart
                   color="info"
-                  title="Statistiques des demandes par mois"
-                  description="Statistiques mensuelles du nombre de demandes"
+                  title="Statistiques des promotions par mois"
+                  description="Statistiques mensuelles du nombre de promotions"
                   date="Mise à jour récente"
                   chart={monthlyChartData}
                 />
