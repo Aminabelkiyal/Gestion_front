@@ -72,7 +72,7 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "singin",
+    name: "signin",
     key: "profile",
     icon: <Icon fontSize="small">person</Icon>,
     route: "/authentication/sign-in",
@@ -81,7 +81,7 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "sigup",
+    name: "signup",
     key: "profile",
     icon: <Icon fontSize="small">person</Icon>,
     route: "/authentication/sign-up",

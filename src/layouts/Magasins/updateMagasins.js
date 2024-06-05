@@ -10,29 +10,30 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
+import axios from "axios";
 
-const UpdateMagasinModal = ({ promotion, onClose, onUpdate, showUpdateModal }) => {
-  const [updatedPromotion, setUpdatedPromotion] = useState({ ...promotion });
+const UpdateMagasinModal = ({ magasin, onClose, onUpdate, showUpdateModal }) => {
+  const [updatedMagasin, setUpdatedMagasin] = useState({ ...magasin });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUpdatedPromotion((prevPromotion) => ({
-      ...prevPromotion,
+    setUpdatedMagasin((prevMagasin) => ({
+      ...prevMagasin,
       [name]: value,
     }));
   };
 
   const handleSubmit = () => {
+    const { id } = updatedMagasin;
     console.log(id);
-    axios(`http://localhost:8080/admin/magasins/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedPromotion),
-    })
+    axios
+      .put(`http://localhost:8080/admin/magasins/${id}`, updatedMagasin, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
       .then((response) => {
-        if (response.ok) {
+        if (response.status === 200) {
           onClose();
           onUpdate();
         } else {
@@ -72,7 +73,7 @@ const UpdateMagasinModal = ({ promotion, onClose, onUpdate, showUpdateModal }) =
                   className="form-control"
                   id="updateNom"
                   name="nom"
-                  value={updatedPromotion.nom}
+                  value={updatedMagasin.nom}
                   onChange={handleChange}
                 />
               </MDBox>
@@ -81,9 +82,9 @@ const UpdateMagasinModal = ({ promotion, onClose, onUpdate, showUpdateModal }) =
                 <MDInput
                   type="text"
                   className="form-control"
-                  id="updatePrenom"
-                  name="prenom"
-                  value={updatedPromotion.prenom}
+                  id="updateAdresse"
+                  name="adresse"
+                  value={updatedMagasin.adresse}
                   onChange={handleChange}
                 />
               </MDBox>
@@ -92,9 +93,9 @@ const UpdateMagasinModal = ({ promotion, onClose, onUpdate, showUpdateModal }) =
                 <MDInput
                   type="text"
                   className="form-control"
-                  id="updateUsername"
-                  name="username"
-                  value={updatedPromotion.username}
+                  id="updateGeolocalisation"
+                  name="geolocalisation"
+                  value={updatedMagasin.geolocalisation}
                   onChange={handleChange}
                 />
               </MDBox>

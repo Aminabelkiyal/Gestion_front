@@ -24,16 +24,16 @@ const UpdateClientModal = ({ client, onClose, onUpdate, showUpdateModal }) => {
   };
 
   const handleSubmit = () => {
+    const { id } = updatedClient;
     console.log(id);
-    axios(`http://localhost:8080/admin/clients/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedClient),
-    })
+    axios
+      .put(`http://localhost:8080/admin/clients/${id}`, updatedClient, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
       .then((response) => {
-        if (response.ok) {
+        if (response.status === 200) {
           onClose();
           onUpdate();
         } else {

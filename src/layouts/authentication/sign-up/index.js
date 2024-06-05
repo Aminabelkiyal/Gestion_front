@@ -28,19 +28,6 @@ const required = (value) => {
     return "Champ obligatoire!";
   }
 };
-
-const validNom = (value) => {
-  if (!isAlphaWithHyphen(value)) {
-    return "Nom non valide.";
-  }
-};
-
-const validPrenom = (value) => {
-  if (!isAlphaWithHyphen(value)) {
-    return "Prenom non valide.";
-  }
-};
-
 const isAlphaWithHyphen = (value) => {
   return /^[a-zA-Z-]+$/.test(value);
 };
@@ -49,13 +36,21 @@ const validEmail = (value) => {
     return "Email non valide.";
   }
 };
+const isRole = (value) => {
+  const validRoles = ["admin"];
+  return validRoles.includes(value);
+};
 
+const validRole = (value) => {
+  if (!isRole(value)) {
+    return "Role nom valid";
+  }
+};
 const vusername = (value) => {
   if (value.length < 3 || value.length > 20) {
     return "Le nom d'utilisateur doit contenir entre 3 et 20 caractères.";
   }
 };
-
 const vpassword = (value) => {
   if (value.length < 6 || value.length > 40) {
     return "Le mot de passe doit contenir entre 6 et 40 caractères.";
@@ -65,8 +60,7 @@ function Cover() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [nom, setNom] = useState("");
-  const [prenom, setPrenom] = useState("");
+  const [role, setRole] = useState("");
   const [message, setMessage] = useState("");
   const [formSubmitted, setFormSubmitted] = useState(false);
   const navigate = useNavigate();
@@ -86,51 +80,45 @@ function Cover() {
     setEmail(email);
   };
 
-  const onChangeNom = (e) => {
-    const nom = e.target.value;
-    setNom(nom);
-  };
-
-  const onChangePrenom = (e) => {
-    const prenom = e.target.value;
-    setPrenom(prenom);
+  const onChangeRole = (e) => {
+    const role = e.target.value;
+    setRole(role);
   };
 
   const handleRegistration = async (e) => {
     e.preventDefault();
     setFormSubmitted(true);
     if (
-      !nom ||
-      !prenom ||
       !username ||
       !email ||
       !password ||
-      validNom(nom) ||
-      validPrenom(prenom) ||
+      !role ||
       required(username) ||
       validEmail(email) ||
       required(password) ||
       vusername(username) ||
-      vpassword(password)
+      vpassword(password) ||
+      validRole(role)
     ) {
       setMessage("Veuillez remplir correctement tous les champs.");
       return;
     }
     axios
-      .post("http://localhost:8080/gestion_events/auth/signup", {
+      .post("http://localhost:8080/api/auth/signup", {
         username,
         email,
         password,
-        nom,
-        prenom,
-        roleName: "manager",
+        roleName: "admin",
       })
       .then((response) => {
-        console.log(response);
-        navigate("/authentication/sign-in");
+        console.log("Response:", response);
+        //changement de route de navigation
+        //c'etait "/authentication/sign-in" je l'ai change pour avoir acces direct au dashboard et il s'ajoute a la bd
+
+        navigate("/dashboard");
       })
       .catch((error) => {
-        console.log(error);
+        console.log("Error", error);
         setMessage("Echec d'inscription. Réessayez.");
       });
   };
@@ -158,35 +146,6 @@ function Cover() {
         </MDBox>
         <MDBox pt={4} pb={3} px={3}>
           <MDBox component="form" role="form" onSubmit={handleRegistration}>
-            <MDBox mb={2}>
-              <MDInput
-                name="nom"
-                required
-                fullWidth
-                id="nom"
-                label="Nom"
-                autoFocus
-                validations={[required, validNom]}
-                onChange={onChangeNom}
-                value={nom}
-                error={formSubmitted && !!validNom(nom)}
-                helperText={formSubmitted && validNom(nom)}
-              />
-            </MDBox>
-            <MDBox mb={2}>
-              <MDInput
-                required
-                fullWidth
-                id="prenom"
-                label="Prenom"
-                name="prenom"
-                value={prenom}
-                validations={[required, validPrenom]}
-                onChange={onChangePrenom}
-                error={formSubmitted && !!validPrenom(prenom)}
-                helperText={formSubmitted && validPrenom(prenom)}
-              />
-            </MDBox>
             <MDBox mb={2}>
               <MDInput
                 required
@@ -234,6 +193,22 @@ function Cover() {
                 helperText={formSubmitted && vpassword(password)}
               />
             </MDBox>
+            <MDBox mb={2}>
+              <MDInput
+                required
+                fullWidth
+                name="role"
+                label="Role"
+                type="role"
+                id="role"
+                value={role}
+                onChange={onChangeRole}
+                variant="outlined"
+                validations={[required, validRole]}
+                error={formSubmitted && !!validRole(role)}
+                helperText={formSubmitted && validRole(role)}
+              />
+            </MDBox>
 
             <MDBox mt={4} mb={1}>
               <MDButton
@@ -248,7 +223,7 @@ function Cover() {
                   color: "white",
                 }}
               >
-                Connectez-vous
+                Se Connecter
               </MDButton>
               {message && (
                 <div className="form-group" style={{ margin: "5px" }}>

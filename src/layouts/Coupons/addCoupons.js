@@ -14,17 +14,14 @@ import FormControl from "@mui/material/FormControl";
 
 const AddCouponModal = ({ onClose, onAdd, showAddModal }) => {
   const [newCoupon, setNewCoupon] = useState({
-    nom: "",
-    prenom: "",
-    username: "",
-    email: "",
-    roleName: "",
-    telephone: "",
-    password: "",
+    code: "",
+    montantpromo: "",
+    magasinId: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    const newValue = name === "magasin" ? parseInt(value, 10) : value;
     setNewCoupon((prevCoupon) => ({
       ...prevCoupon,
       [name]: value,
@@ -32,24 +29,27 @@ const AddCouponModal = ({ onClose, onAdd, showAddModal }) => {
   };
 
   const handleSubmit = () => {
-    console.log(newCoupon);
+    const { code, montantpromo, magasin } = newCoupon;
+    const couponData = {
+      code,
+      montantpromo: parseFloat(montantpromo),
+      magasinId: magasin,
+    };
+    //console.log(newCoupon);
 
-    axios("http://localhost:8080/admin/coupons", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: JSON.stringify(newCoupon),
-    })
+    axios
+      .post("http://localhost:8080/admin/coupons/", newCoupon)
       .then((response) => {
-        if (response.status === 200) {
+        if (response.status === 201) {
           onAdd();
           onClose();
         } else {
           console.error("Error adding coupon:", response.statusText);
         }
       })
-      .catch((error) => console.error("Error adding coupon:", error));
+      .catch((error) => {
+        console.error("Error adding coupon:", error.response?.data || error.message);
+      });
   };
 
   return (
@@ -79,9 +79,9 @@ const AddCouponModal = ({ onClose, onAdd, showAddModal }) => {
                 <MDInput
                   type="text"
                   className="form-control"
-                  id="addNom"
-                  name="nom"
-                  value={newCoupon.nom}
+                  id="addCode"
+                  name="code"
+                  value={newCoupon.code}
                   onChange={handleChange}
                 />
               </MDBox>
@@ -90,9 +90,9 @@ const AddCouponModal = ({ onClose, onAdd, showAddModal }) => {
                 <MDInput
                   type="text"
                   className="form-control"
-                  id="addPrenom"
-                  name="prenom"
-                  value={newCoupon.prenom}
+                  id="addMontantpromo"
+                  name="montantpromo"
+                  value={newCoupon.montantpromo}
                   onChange={handleChange}
                 />
               </MDBox>
@@ -100,10 +100,10 @@ const AddCouponModal = ({ onClose, onAdd, showAddModal }) => {
                 <InputLabel id="role-select-label">Magasins</InputLabel>
                 <Select
                   labelId="role-select-label"
-                  id="addRole"
-                  name="roleName"
-                  value={newCoupon.roleName}
-                  label="Role"
+                  id="addMagasin"
+                  name="magasin"
+                  value={newCoupon.magasin}
+                  label="Magasin"
                   onChange={handleChange}
                   sx={{
                     height: "45px",
@@ -116,10 +116,10 @@ const AddCouponModal = ({ onClose, onAdd, showAddModal }) => {
                   <MenuItem value="">
                     <em>Select</em>
                   </MenuItem>
-                  <MenuItem value="zara">Zara</MenuItem>
-                  <MenuItem value="h&m">H&M</MenuItem>
-                  <MenuItem value="miniso">Miniso</MenuItem>
-                  <MenuItem value="koton">Koton</MenuItem>
+                  <MenuItem value="1">Zara</MenuItem>
+                  <MenuItem value="2">H&M</MenuItem>
+                  <MenuItem value="3">Miniso</MenuItem>
+                  <MenuItem value="4">Koton</MenuItem>
                 </Select>
               </FormControl>
               <MDBox mt={2}>

@@ -11,20 +11,11 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import axios from "axios";
 
-// Ajoutez l'icône par défaut de Leaflet
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
-  iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
-});
-
 const AddStoreModal = ({ onClose, onAdd, showAddModal }) => {
   const [newStore, setNewStore] = useState({
-    name: "",
-    address: "",
-    latitude: "",
-    longitude: "",
+    nom: "",
+    adresse: "",
+    geolocalisation: "",
   });
 
   const handleChange = (e) => {
@@ -34,17 +25,13 @@ const AddStoreModal = ({ onClose, onAdd, showAddModal }) => {
       [name]: value,
     }));
   };
-
   const handleSubmit = () => {
-    axios("http://localhost:8080/admin/stores", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: JSON.stringify(newStore),
-    })
+    console.log(newStore);
+
+    axios
+      .post("http://localhost:8080/admin/magasins", newStore)
       .then((response) => {
-        if (response.status === 200) {
+        if (response.status === 201) {
           onAdd();
           onClose();
         } else {
@@ -52,23 +39,6 @@ const AddStoreModal = ({ onClose, onAdd, showAddModal }) => {
         }
       })
       .catch((error) => console.error("Error adding store:", error));
-  };
-
-  const LocationMarker = () => {
-    const map = useMapEvents({
-      click(e) {
-        setNewStore((prevStore) => ({
-          ...prevStore,
-          latitude: e.latlng.lat,
-          longitude: e.latlng.lng,
-        }));
-        map.flyTo(e.latlng, map.getZoom());
-      },
-    });
-
-    return newStore.latitude && newStore.longitude ? (
-      <Marker position={[newStore.latitude, newStore.longitude]} />
-    ) : null;
   };
 
   return (
@@ -99,8 +69,8 @@ const AddStoreModal = ({ onClose, onAdd, showAddModal }) => {
                   type="text"
                   className="form-control"
                   id="addName"
-                  name="name"
-                  value={newStore.name}
+                  name="nom"
+                  value={newStore.nom}
                   onChange={handleChange}
                 />
               </MDBox>
@@ -109,14 +79,25 @@ const AddStoreModal = ({ onClose, onAdd, showAddModal }) => {
                 <MDInput
                   type="text"
                   className="form-control"
-                  id="addAddress"
-                  name="address"
-                  value={newStore.address}
+                  id="addAdresse"
+                  name="adresse"
+                  value={newStore.adresse}
                   onChange={handleChange}
                 />
               </MDBox>
               <MDBox mb={2}>
-                <MDTypography variant="caption">Géolocalisation:</MDTypography>
+                <MDTypography variant="caption">Geolocalisation:</MDTypography>
+                <MDInput
+                  type="text"
+                  className="form-control"
+                  id="addGeolocalisation"
+                  name="geolocalisation"
+                  value={newStore.geolocalisation}
+                  onChange={handleChange}
+                />
+              </MDBox>
+              <MDBox mb={2}>
+                <MDTypography variant="caption"> Géolocalisation:</MDTypography>
                 <MapContainer
                   style={{ height: "300px", width: "100%" }}
                   center={[51.505, -0.09]}
@@ -124,16 +105,11 @@ const AddStoreModal = ({ onClose, onAdd, showAddModal }) => {
                 >
                   <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    attribution='&copy; <a href=https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   />
-                  <LocationMarker />
                 </MapContainer>
-                {newStore.latitude && newStore.longitude && (
-                  <p>
-                    Latitude: {newStore.latitude}, Longitude: {newStore.longitude}
-                  </p>
-                )}
               </MDBox>
+
               <MDBox mt={2}>
                 <MDButton variant="gradient" color="info" onClick={handleSubmit}>
                   Ajouter

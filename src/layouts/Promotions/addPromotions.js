@@ -13,15 +13,10 @@ import TextField from "@mui/material/TextField";
 
 const AddPromotionModal = ({ onClose, onAdd, showAddModal }) => {
   const [newPromotion, setNewPromotion] = useState({
-    nom: "",
-    prenom: "",
-    username: "",
-    email: "",
-    roleName: "",
-    telephone: "",
-    password: "",
-    dateDebut: null,
-    dateFin: null,
+    pourcentagereduction: "",
+    description: "",
+    datedebut: "",
+    datefin: "",
   });
 
   const handleChange = (e) => {
@@ -30,6 +25,8 @@ const AddPromotionModal = ({ onClose, onAdd, showAddModal }) => {
       ...prevPromotion,
       [name]: value,
     }));
+
+    console.log(newPromotion);
   };
 
   const handleDateChange = (name, date) => {
@@ -42,19 +39,18 @@ const AddPromotionModal = ({ onClose, onAdd, showAddModal }) => {
   const handleSubmit = () => {
     console.log(newPromotion);
 
-    axios("http://localhost:8080/admin/promotions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: JSON.stringify(newPromotion),
-    })
+    axios
+      .post("http://localhost:8080/admin/promotions", newPromotion, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
       .then((response) => {
-        if (response.status === 200) {
+        if (response.status === 201) {
           onAdd();
           onClose();
         } else {
-          console.error("Error adding promotion:", response.statusText);
+          console.error("Error adding promotion:", response);
         }
       })
       .catch((error) => console.error("Error adding promotion:", error));
@@ -88,8 +84,8 @@ const AddPromotionModal = ({ onClose, onAdd, showAddModal }) => {
                   type="text"
                   className="form-control"
                   id="addNom"
-                  name="nom"
-                  value={newPromotion.nom}
+                  name="pourcentagereduction"
+                  value={newPromotion.pourcentagereduction}
                   onChange={handleChange}
                 />
               </MDBox>
@@ -99,8 +95,8 @@ const AddPromotionModal = ({ onClose, onAdd, showAddModal }) => {
                   type="text"
                   className="form-control"
                   id="addPrenom"
-                  name="prenom"
-                  value={newPromotion.prenom}
+                  name="description"
+                  value={newPromotion.description}
                   onChange={handleChange}
                 />
               </MDBox>
@@ -109,7 +105,7 @@ const AddPromotionModal = ({ onClose, onAdd, showAddModal }) => {
                   <MDTypography variant="caption">Date debut:</MDTypography>
                   <DatePicker
                     value={newPromotion.dateDebut}
-                    onChange={(date) => handleDateChange("dateDebut", date)}
+                    onChange={(date) => handleDateChange("datedebut", date)}
                     renderInput={(params) => <TextField {...params} />}
                   />
                 </MDBox>
@@ -117,7 +113,7 @@ const AddPromotionModal = ({ onClose, onAdd, showAddModal }) => {
                   <MDTypography variant="caption">Date fin:</MDTypography>
                   <DatePicker
                     value={newPromotion.dateFin}
-                    onChange={(date) => handleDateChange("dateFin", date)}
+                    onChange={(date) => handleDateChange("datefin", date)}
                     renderInput={(params) => <TextField {...params} />}
                   />
                 </MDBox>

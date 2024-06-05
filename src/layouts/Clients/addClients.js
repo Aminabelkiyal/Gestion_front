@@ -16,7 +16,6 @@ const AddClientModal = ({ onClose, onAdd, showAddModal }) => {
   const [newClient, setNewClient] = useState({
     nom: "",
     email: "",
-    roleName: "",
   });
 
   const handleChange = (e) => {
@@ -30,15 +29,14 @@ const AddClientModal = ({ onClose, onAdd, showAddModal }) => {
   const handleSubmit = () => {
     console.log(newClient);
 
-    axios("http://localhost:8080/clients", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newClient),
-    })
+    axios
+      .post("http://localhost:8080/admin/clients", newClient, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
       .then((response) => {
-        if (response.ok) {
+        if (response.status === 201) {
           onAdd();
           onClose();
         } else {

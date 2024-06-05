@@ -24,16 +24,16 @@ const UpdateCouponModal = ({ coupon, onClose, onUpdate, showUpdateModal }) => {
   };
 
   const handleSubmit = () => {
+    const { id } = updatedCoupon;
     console.log(id);
-    axios(`http://localhost:8080/admin/coupons/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedCoupon),
-    })
+    axios
+      .put(`http://localhost:8080/admin/coupons/${id}`, updatedCoupon, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
       .then((response) => {
-        if (response.ok) {
+        if (response.status === 200) {
           onClose();
           onUpdate();
         } else {
@@ -71,9 +71,9 @@ const UpdateCouponModal = ({ coupon, onClose, onUpdate, showUpdateModal }) => {
                 <MDInput
                   type="text"
                   className="form-control"
-                  id="updateNom"
-                  name="nom"
-                  value={updatedCoupon.nom}
+                  id="updateCode"
+                  name="code"
+                  value={updatedCoupon.code}
                   onChange={handleChange}
                 />
               </MDBox>
@@ -82,9 +82,9 @@ const UpdateCouponModal = ({ coupon, onClose, onUpdate, showUpdateModal }) => {
                 <MDInput
                   type="text"
                   className="form-control"
-                  id="updatePrenom"
-                  name="prenom"
-                  value={updatedCoupon.prenom}
+                  id="updateMontantpromo"
+                  name="montantpromo"
+                  value={updatedCoupon.montantpromo}
                   onChange={handleChange}
                 />
               </MDBox>
@@ -93,9 +93,9 @@ const UpdateCouponModal = ({ coupon, onClose, onUpdate, showUpdateModal }) => {
                 <MDInput
                   type="text"
                   className="form-control"
-                  id="updateUsername"
-                  name="username"
-                  value={updatedCoupon.username}
+                  id="updateMagasin"
+                  name="magasin"
+                  value={updatedCoupon.magasin}
                   onChange={handleChange}
                 />
               </MDBox>

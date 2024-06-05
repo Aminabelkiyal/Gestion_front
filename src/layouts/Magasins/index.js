@@ -55,11 +55,10 @@ function Magasins() {
   };
 
   const handleDelete = (id) => {
-    axios(`http://localhost:8080/admin/magasins/${id}`, {
-      method: "DELETE",
-    })
+    axios
+      .delete(`http://localhost:8080/admin/magasins/${id}`)
       .then((response) => {
-        if (response.ok) {
+        if (response.status >= 200 && response.status < 300) {
           loadMagasins();
         } else {
           console.error("Error deleting magasin:", response.statusText);
@@ -70,7 +69,8 @@ function Magasins() {
 
   const loadMagasins = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/admin/magasins/{id}");
+      const response = await axios.get("http://localhost:8080/admin/magasins");
+      console.log(response.data);
       setMagasins(response.data);
     } catch (error) {
       console.error("Error fetching magasins:", error);
@@ -91,14 +91,16 @@ function Magasins() {
           <MDTypography variant="caption">{magasin.email}</MDTypography>
         </MDBox>
       </MDBox>
+      <MDTypography variant="caption">{`Telephone: ${magasin.telephone}`}</MDTypography>
+      <MDTypography variant="caption">{`Username: ${magasin.username}`}</MDTypography>
+      <MDTypography variant="caption">{`Role: ${magasin.role.name}`}</MDTypography>
     </div>
   );
 
   const columns = [
-    { Header: "Nom ", accessor: "name" },
-    { Header: "Adresse", accessor: "email" },
-    { Header: "geolocalisation", accessor: "telephone" },
-
+    { Header: "Nom", accessor: "nom" },
+    { Header: "Adresse", accessor: "adresse" },
+    { Header: "Géolocalisation", accessor: "geolocalisation" },
     {
       Header: "Actions",
       accessor: "actions",
@@ -114,11 +116,12 @@ function Magasins() {
       ),
     },
   ];
-
-  const rows = magasins.map((client) => ({
-    name: `${magasin.nom} `,
+  const rows = magasins.map((magasin) => ({
+    nom: magasin.nom,
+    adresse: magasin.adresse,
+    geolocalisation: magasin.geolocalisation,
     actions: "",
-    id: client.id,
+    id: magasin.id,
   }));
 
   return (

@@ -23,16 +23,16 @@ const UpdateProductModal = ({ product, onClose, onUpdate, showUpdateModal }) => 
   };
 
   const handleSubmit = () => {
+    const { id } = updatedProduct;
     console.log(id);
-    axios(`http://localhost:8080/admin/produits/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedProduct),
-    })
+    axios
+      .put(`http://localhost:8080/admin/produits/${id}`, updatedProduct, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
       .then((response) => {
-        if (response.ok) {
+        if (response.status === 200) {
           onClose();
           onUpdate();
         } else {
@@ -81,9 +81,9 @@ const UpdateProductModal = ({ product, onClose, onUpdate, showUpdateModal }) => 
                 <MDInput
                   type="text"
                   className="form-control"
-                  id="updatePrenom"
-                  name="prenom"
-                  value={updatedProduct.prenom}
+                  id="updateDescription"
+                  name="description"
+                  value={updatedProduct.description}
                   onChange={handleChange}
                 />
               </MDBox>
@@ -92,9 +92,9 @@ const UpdateProductModal = ({ product, onClose, onUpdate, showUpdateModal }) => 
                 <MDInput
                   type="text"
                   className="form-control"
-                  id="updateUsername"
-                  name="username"
-                  value={updatedProduct.username}
+                  id="updateCategories"
+                  name="categorie"
+                  value={updatedProduct.categorie}
                   onChange={handleChange}
                 />
               </MDBox>
@@ -103,9 +103,9 @@ const UpdateProductModal = ({ product, onClose, onUpdate, showUpdateModal }) => 
                 <MDInput
                   type="email"
                   className="form-control"
-                  id="updateEmail"
-                  name="email"
-                  value={updatedProduct.email}
+                  id="updateImage"
+                  name="image"
+                  value={updatedProduct.image}
                   onChange={handleChange}
                 />
               </MDBox>
@@ -115,9 +115,9 @@ const UpdateProductModal = ({ product, onClose, onUpdate, showUpdateModal }) => 
                 <MDInput
                   type="tel"
                   className="form-control"
-                  id="updateTelephone"
-                  name="telephone"
-                  value={updatedProduct.telephone}
+                  id="updatePrix"
+                  name="prix"
+                  value={updatedProduct.prix}
                   onChange={handleChange}
                 />
               </MDBox>

@@ -10,7 +10,7 @@ import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
-import FormControl from "@mui/material/FormControl"; // Import FormControl
+import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -18,14 +18,10 @@ import MenuItem from "@mui/material/MenuItem";
 const AddProductModal = ({ onClose, onAdd, showAddModal }) => {
   const [newProduct, setNewProduct] = useState({
     nom: "",
-    prenom: "",
-    username: "",
-    email: "",
-    roleName: "",
-    telephone: "",
-    password: "",
-    image: null,
-    imageUrl: "",
+    description: "",
+    categorie: "",
+    prix: "",
+    image: "",
   });
 
   const handleChange = (e) => {
@@ -36,33 +32,11 @@ const AddProductModal = ({ onClose, onAdd, showAddModal }) => {
     }));
   };
 
-  const handleImageUpload = (acceptedFiles) => {
-    const file = acceptedFiles[0];
-    setNewProduct((prevProduct) => ({
-      ...prevProduct,
-      image: file,
-    }));
-  };
-
   const handleSubmit = () => {
-    const formData = new FormData();
-    for (const key in newProduct) {
-      if (key === "image" && newProduct[key]) {
-        formData.append(key, newProduct[key]);
-      } else {
-        formData.append(key, newProduct[key]);
-      }
-    }
-
-    axios("http://localhost:8080/admin/produits", {
-      method: "POST",
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      data: formData,
-    })
+    axios
+      .post("http://localhost:8080/admin/produits", newProduct)
       .then((response) => {
-        if (response.status === 200) {
+        if (response.status === 201) {
           onAdd();
           onClose();
         } else {
@@ -71,14 +45,6 @@ const AddProductModal = ({ onClose, onAdd, showAddModal }) => {
       })
       .catch((error) => console.error("Error adding product:", error));
   };
-
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop: handleImageUpload,
-    accept: "image/*",
-  });
-
-  const rootProps = getRootProps();
-  const inputProps = getInputProps();
 
   return (
     <MDBox
@@ -118,20 +84,20 @@ const AddProductModal = ({ onClose, onAdd, showAddModal }) => {
                 <MDInput
                   type="text"
                   className="form-control"
-                  id="addPrenom"
-                  name="prenom"
-                  value={newProduct.prenom}
+                  id="addDescription"
+                  name="description"
+                  value={newProduct.description}
                   onChange={handleChange}
                 />
               </MDBox>
               <FormControl fullWidth variant="outlined" sx={{ marginBottom: 2 }}>
                 <InputLabel id="role-select-label">Categories</InputLabel>
                 <Select
-                  labelId="role-select-label"
-                  id="addRole"
-                  name="roleName"
-                  value={newProduct.roleName}
-                  label="Role"
+                  labelId="categories-select-label"
+                  id="addCategories"
+                  name="categorie"
+                  value={newProduct.categorie}
+                  label="Categories"
                   onChange={handleChange}
                   sx={{
                     height: "45px",
@@ -144,46 +110,30 @@ const AddProductModal = ({ onClose, onAdd, showAddModal }) => {
                   <MenuItem value="">
                     <em>Select</em>
                   </MenuItem>
-                  <MenuItem value="zara">Homme</MenuItem>
-                  <MenuItem value="h&m">Femme</MenuItem>
-                  <MenuItem value="miniso">Enfants</MenuItem>
+                  <MenuItem value="homme">Homme</MenuItem>
+                  <MenuItem value="femme">Femme</MenuItem>
+                  <MenuItem value="enfants">Enfants</MenuItem>
                 </Select>
               </FormControl>
               <MDBox mb={2}>
                 <MDTypography variant="caption">Image:</MDTypography>
-                <div
-                  style={{
-                    border: "1px dashed #ccc",
-                    padding: "10px",
-                    textAlign: "center",
-                  }}
-                  // eslint-disable-next-line react/jsx-props-no-spreading
-                  {...rootProps}
-                >
-                  <input {...inputProps} />
-                  <p>Faites glisser une image ici, ou cliquez pour sélectionner une image</p>
-                </div>
-                {newProduct.image && <p>Image sélectionnée : {newProduct.image.name}</p>}
-                <MDBox mb={2}>
-                  <MDTypography variant="caption">ou URL de l'image:</MDTypography>
-                  <MDInput
-                    type="text"
-                    className="form-control"
-                    id="addImageUrl"
-                    name="imageUrl"
-                    value={newProduct.imageUrl}
-                    onChange={handleChange}
-                  />
-                </MDBox>
+                <MDInput
+                  type="text"
+                  className="form-control"
+                  id="addImage"
+                  name="image"
+                  value={newProduct.image}
+                  onChange={handleChange}
+                />
               </MDBox>
               <MDBox mb={2}>
                 <MDTypography variant="caption">Prix:</MDTypography>
                 <MDInput
-                  type="tel"
+                  type="number"
                   className="form-control"
-                  id="addTelephone"
-                  name="telephone"
-                  value={newProduct.telephone}
+                  id="addPrix"
+                  name="prix"
+                  value={newProduct.prix}
                   onChange={handleChange}
                 />
               </MDBox>

@@ -37,10 +37,12 @@ import React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import SettingsRemoteOutlined from "@mui/icons-material/SettingsRemoteOutlined";
 
 function Basic() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
@@ -54,21 +56,27 @@ function Basic() {
     setPassword(password);
   };
 
+  const onChangeRole = (e) => {
+    const role = e.target.value;
+    setRole(role);
+  };
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8080/gestion_events/auth/signin", {
+      const response = await axios.post("http://localhost:8080/api/auth/signin", {
         username,
         password,
       });
+      console.log("Response", response);
       const user = response.data;
       console.log(user.id);
       const token = response.data.token;
-      Cookies.set("event", token, { path: "/api", expires: 1 });
+      Cookies.set("promo", token, { path: "/api", expires: 1 });
       localStorage.setItem("user", JSON.stringify(response.data));
 
       navigate("/dashboard");
     } catch (error) {
+      console.error("Error:", error);
       if (error.response && error.response.status === 401) {
         setErrorMessage("Nom d'utilisateur ou mot de passe incorrect.");
       } else {
@@ -122,6 +130,19 @@ function Basic() {
                 id="password"
                 value={password}
                 onChange={onChangePassword}
+              />
+            </MDBox>
+            <MDBox mb={2}>
+              <MDInput
+                margin="normal"
+                required
+                fullWidth
+                name="role"
+                label="Role"
+                type="role"
+                id="role"
+                value={role}
+                onChange={onChangeRole}
               />
             </MDBox>
 

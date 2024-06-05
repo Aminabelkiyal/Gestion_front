@@ -30,16 +30,6 @@ function Coupons() {
   const [selectedCoupon, setSelectedCoupon] = useState(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedRole, setSelectedRole] = useState("all");
-
-  const handleRoleChange = (role) => {
-    setSelectedRole(role);
-  };
-
-  const filteredCoupons =
-    selectedRole === "all"
-      ? coupons
-      : coupons.filter((coupon) => coupon.role.name === selectedRole);
 
   const handleUpdateClick = (coupon) => {
     setSelectedCoupon(coupon);
@@ -65,12 +55,10 @@ function Coupons() {
   };
 
   const handleDelete = (id) => {
-    axios(`http://localhost:8080/admin/coupon/${id}`, {
-      // Mis à jour l'URL
-      method: "DELETE",
-    })
+    axios
+      .delete(`http://localhost:8080/admin/coupons/${id}`)
       .then((response) => {
-        if (response.ok) {
+        if (response.status >= 200 && response.status < 300) {
           loadCoupons();
         } else {
           console.error("Error deleting coupon:", response.statusText);
@@ -78,10 +66,10 @@ function Coupons() {
       })
       .catch((error) => console.error("Error deleting coupon:", error));
   };
-
   const loadCoupons = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/admin/coupons"); // Mis à jour l'URL
+      const response = await axios.get("http://localhost:8080/admin/coupons");
+      console.log(response.data);
       setCoupons(response.data);
     } catch (error) {
       console.error("Error fetching coupons:", error);
@@ -109,8 +97,8 @@ function Coupons() {
   );
 
   const columns = [
-    { Header: "code", accessor: "code" },
-    { Header: "Montant Promotion", accessor: "montant" },
+    { Header: "Code", accessor: "code" },
+    { Header: "Montant Promotion", accessor: "montantpromo" },
     { Header: "Magasin", accessor: "magasin" },
 
     {
@@ -130,11 +118,9 @@ function Coupons() {
   ];
 
   const rows = coupons.map((coupon) => ({
-    name: `${coupon.nom} ${coupon.prenom}`,
-    email: coupon.email,
-    telephone: coupon.telephone,
-    username: coupon.username,
-    role: coupon.role.name === "ROLE_ADMIN" ? "Admin" : "Manager",
+    code: coupon.code,
+    montantpromo: coupon.montantpromo,
+    magasin: coupon.magasin,
     actions: "",
     id: coupon.id,
   }));

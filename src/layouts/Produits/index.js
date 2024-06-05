@@ -21,33 +21,28 @@ import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
-import AddUserModal from "./addProduits";
+import AddProductModal from "./addProduits";
 import MDButton from "components/MDButton";
-import UpdateUserModal from "./updateProduits";
+import UpdateProductModal from "./updateProduits";
 
 function Produits() {
   const [produits, setProduits] = useState([]); // Changer `users` en `produits`
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedProduit, setSelectedProduit] = useState(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedRole, setSelectedRole] = useState("all");
 
-  const handleRoleChange = (role) => {
-    setSelectedRole(role);
-  };
-
-  const handleUpdateClick = (user) => {
-    setSelectedUser(user);
+  const handleUpdateClick = (produit) => {
+    setSelectedProduit(produit);
     setShowUpdateModal(true);
   };
 
   const handleUpdateClose = () => {
     setShowUpdateModal(false);
-    setSelectedUser(null);
+    setSelectedProduit(null);
   };
 
   const handleUpdate = () => {
-    loadProduits(); // Changer `loadUsers` en `loadProduits`
+    loadProduits();
     handleUpdateClose();
   };
 
@@ -60,11 +55,10 @@ function Produits() {
   };
 
   const handleDelete = (id) => {
-    fetch(`http://localhost:8080/admin/produits/${id}`, {
-      method: "DELETE",
-    })
+    axios
+      .delete(`http://localhost:8080/admin/produits/${id}`)
       .then((response) => {
-        if (response.ok) {
+        if (response.status >= 200 && response.status < 300) {
           loadProduits(); // Changer `loadUsers` en `loadProduits`
         } else {
           console.error("Error deleting user:", response.statusText);
@@ -76,9 +70,8 @@ function Produits() {
   const loadProduits = async () => {
     // Changer `loadUsers` en `loadProduits`
     try {
-      const response = await axios.get("http://localhost:8080/admin/promotions/${id}");
+      const response = await axios.get("http://localhost:8080/admin/produits/");
       setProduits(response.data); // Changer `setUsers` en `setProduits`
-      console.log(response.data); // Utiliser `response.data` au lieu de `data`
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -88,7 +81,7 @@ function Produits() {
     loadProduits(); // Changer `loadUsers` en `loadProduits`
   }, []);
 
-  const UserCard = ({ user }) => (
+  const ProductCard = ({ product }) => (
     <div>
       <MDBox display="flex" alignItems="center" lineHeight={1}>
         <MDBox ml={2} lineHeight={1}>
@@ -105,11 +98,11 @@ function Produits() {
   );
 
   const columns = [
-    { Header: "Nom ", accessor: "name" },
-    { Header: "Description", accessor: "email" },
-    { Header: "Categorie", accessor: "telephone" },
-    { Header: "Image", accessor: "username" },
-    { Header: "Prix", accessor: "role" },
+    { Header: "Nom ", accessor: "nom" },
+    { Header: "Description", accessor: "description" },
+    { Header: "Categorie", accessor: "categorie" },
+    { Header: "Image", accessor: "image" },
+    { Header: "Prix", accessor: "prix" },
     {
       Header: "Actions",
       accessor: "actions",
@@ -126,9 +119,13 @@ function Produits() {
     },
   ];
   const rows = produits.map((produit) => ({
-    name: `${produit.nom} `,
+    nom: produit.nom,
+    description: produit.description,
+    categorie: produit.categorie,
+    image: produit.image,
+    prix: produit.prix,
     actions: "",
-    id: produit.id, // Changer `client.id` en `produit.id`
+    id: produit.id,
   }));
 
   return (
@@ -173,15 +170,19 @@ function Produits() {
       </MDBox>
       <Footer />
       {showUpdateModal && (
-        <UpdateUserModal
-          user={selectedUser}
+        <UpdateProductModal
+          product={selectedProduit}
           onClose={handleUpdateClose}
           onUpdate={handleUpdate}
           showUpdateModal={showUpdateModal}
         />
       )}
       {showAddModal && (
-        <AddUserModal onClose={handleAddClose} onAdd={loadProduits} showAddModal={showAddModal} />
+        <AddProductModal
+          onClose={handleAddClose}
+          onAdd={loadProduits}
+          showAddModal={showAddModal}
+        />
       )}
     </DashboardLayout>
   );

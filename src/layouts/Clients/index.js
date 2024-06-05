@@ -55,11 +55,10 @@ function Clients() {
   };
 
   const handleDelete = (id) => {
-    axios(`http://localhost:8080/admin/client/${id}`, {
-      method: "DELETE",
-    })
+    axios
+      .delete(`http://localhost:8080/admin/clients/${id}`)
       .then((response) => {
-        if (response.ok) {
+        if (response.status >= 200 && response.status < 300) {
           loadClients();
         } else {
           console.error("Error deleting client:", response.statusText);

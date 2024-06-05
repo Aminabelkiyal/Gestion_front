@@ -10,6 +10,8 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
+import axios from "axios";
+
 const UpdatePromotionModal = ({ promotion, onClose, onUpdate, showUpdateModal }) => {
   const [updatedPromotion, setUpdatedPromotion] = useState({ ...promotion });
 
@@ -22,16 +24,16 @@ const UpdatePromotionModal = ({ promotion, onClose, onUpdate, showUpdateModal })
   };
 
   const handleSubmit = () => {
-    console.log(updatedPromotion);
-    axios(`http://localhost:8080/admin/promotions/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedPromotion),
-    })
+    const { id } = updatedPromotion;
+    console.log(id);
+    axios
+      .put(`http://localhost:8080/admin/promotions/${id}`, updatedPromotion, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
       .then((response) => {
-        if (response.ok) {
+        if (response.status === 200) {
           onClose();
           onUpdate();
         } else {
@@ -71,7 +73,7 @@ const UpdatePromotionModal = ({ promotion, onClose, onUpdate, showUpdateModal })
                   className="form-control"
                   id="updateNom"
                   name="nom"
-                  value={updatedPromotion.nom}
+                  value={updatedPromotion.pourcentagereduction}
                   onChange={handleChange}
                 />
               </MDBox>
@@ -80,9 +82,9 @@ const UpdatePromotionModal = ({ promotion, onClose, onUpdate, showUpdateModal })
                 <MDInput
                   type="text"
                   className="form-control"
-                  id="updatePrenom"
-                  name="prenom"
-                  value={updatedPromotion.prenom}
+                  id="updateDescription"
+                  name="description"
+                  value={updatedPromotion.description}
                   onChange={handleChange}
                 />
               </MDBox>
@@ -93,7 +95,7 @@ const UpdatePromotionModal = ({ promotion, onClose, onUpdate, showUpdateModal })
                   className="form-control"
                   id="updateUsername"
                   name="username"
-                  value={updatedPromotion.username}
+                  value={updatedPromotion.datedebut}
                   onChange={handleChange}
                 />
               </MDBox>
@@ -104,7 +106,7 @@ const UpdatePromotionModal = ({ promotion, onClose, onUpdate, showUpdateModal })
                   className="form-control"
                   id="updateEmail"
                   name="email"
-                  value={updatedPromotion.email}
+                  value={updatedPromotion.datefin}
                   onChange={handleChange}
                 />
               </MDBox>

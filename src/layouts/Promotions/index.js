@@ -30,11 +30,6 @@ function Promotions() {
   const [selectedPromotion, setSelectedPromotion] = useState(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedRole, setSelectedRole] = useState("all");
-
-  const handleRoleChange = (role) => {
-    setSelectedRole(role);
-  };
 
   const handleUpdateClick = (promotion) => {
     setSelectedPromotion(promotion);
@@ -60,11 +55,10 @@ function Promotions() {
   };
 
   const handleDelete = (id) => {
-    fetch(`http://localhost:8080/admin/promotions/${id}`, {
-      method: "DELETE",
-    })
+    axios
+      .delete(`http://localhost:8080/admin/promotions/${id}`)
       .then((response) => {
-        if (response.ok) {
+        if (response.status >= 200 && response.status < 300) {
           loadPromotions();
         } else {
           console.error("Error deleting promotion:", response.statusText);
@@ -75,9 +69,8 @@ function Promotions() {
 
   const loadPromotions = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/admin/promotions/{id}");
+      const response = await axios.get("http://localhost:8080/admin/promotions");
       setPromotions(response.data);
-      console.log(response.data); // Utiliser `response.data` au lieu de `data`
     } catch (error) {
       console.error("Error fetching promotions:", error);
     }
@@ -104,10 +97,10 @@ function Promotions() {
   );
 
   const columns = [
-    { Header: "Pourcentage", accessor: "pourcentage" },
+    { Header: "Pourcentage", accessor: "pourcentagereduction" },
     { Header: "Description", accessor: "description" },
-    { Header: "Date debut", accessor: "dateDebut" },
-    { Header: "Date fin", accessor: "dateFin" },
+    { Header: "Date debut", accessor: "datedebut" },
+    { Header: "Date fin", accessor: "datefin" },
     {
       Header: "Actions",
       accessor: "actions",
@@ -125,10 +118,10 @@ function Promotions() {
   ];
 
   const rows = promotions.map((promotion) => ({
-    pourcentage: promotion.pourcentage,
+    pourcentagereduction: promotion.pourcentagereduction,
     description: promotion.description,
-    dateDebut: promotion.dateDebut,
-    dateFin: promotion.dateFin,
+    datedebut: promotion.datedebut,
+    datefin: promotion.datefin,
     actions: "",
     id: promotion.id,
   }));
